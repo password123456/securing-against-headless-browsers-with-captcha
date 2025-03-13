@@ -7,7 +7,7 @@ Securing Against Headless Browsers with CAPTCHA: Hands-On Implementation
 
 [pyversion-button]: https://img.shields.io/pypi/pyversions/Markdown.svg
 [made-with-python]: https://img.shields.io/badge/Made%20with-Python-1f425f.svg
-[hits-button]: https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fpassword123456%2Fslackbridge-api&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false
+[hits-button]: https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fpassword123456%2Fsecuring-against-headless-browsers-with-captcha&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false
 
 
 This repository implements a robust headless browser detection system designed to protect web applications, specifically targeting membership registration endpoints (`/memberships`). Built with **Python Flask**, it leverages advanced detection techniques and integrates Google reCAPTCHA v2 for bot verification. The system is tailored for security engineers looking to mitigate automated attacks by identifying and challenging headless browsers.
