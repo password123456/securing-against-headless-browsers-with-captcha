@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Membership Page</title>
+    <style>
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; }
+        .modal.show { display: block; }
+    </style>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <h1>Membership Page</h1>
+    <div id="captchaModal" class="modal">
+        <h3>Please verify you are not a bot</h3>
+        <div class="g-recaptcha" id="recaptcha"></div>
+        <button onclick="submitCaptcha()">Submit</button>
+    </div>
+
+    <script>
+        function getCanvasFingerprint() {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            ctx.textBaseline = "top";
+            ctx.font = "14px Arial";
+            ctx.fillText("HeadlessTest", 2, 2);
+            return canvas.toDataURL();
+        }
+
+        function getWebGLInfo() {
+            const gl = document.createElement("canvas").getContext("webgl");
+            if (!gl) return "WebGL not supported";
+            return gl.getParameter(gl.RENDERER) + " | " + gl.getParameter(gl.VENDOR);
+        }
+
+        let userInteracted = false;
+        document.addEventListener("click", () => userInteracted = true);
+
+        fetch('/memberships?' + new URLSearchParams({
+            webdriver: !!navigator.webdriver,
+            canvasFingerprint: getCanvasFingerprint(),
+            outerHeight: window.outerHeight,
+            outerWidth: window.outerWidth,
+            webglInfo: getWebGLInfo(),
+            timingNavigationStart: performance.timing.navigationStart,
+            timingResponseEnd: performance.timing.responseEnd,
+            userInteraction: userInteracted
+        }), {
+            method: 'GET',
+            headers: { 'User-Agent': navigator.userAgent }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.requires_captcha) {
+                window.location.href = data.redirect;
+            } else {
+                alert(data.message); // "you are human"
+            }
+        })
+        .catch(error => console.error('Error:', error));
+
+        // CAPTCHA 페이지 로직
+        if (window.location.pathname === '/captcha') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionToken = urlParams.get('session_token');
+            showCaptchaModal(sessionToken);
+        }
+
+        function showCaptchaModal(sessionToken) {
+            const modal = document.getElementById("captchaModal");
+            const recaptchaDiv = document.getElementById("recaptcha");
+            recaptchaDiv.setAttribute("data-sitekey", "your-recaptcha-site-key"); // Google reCAPTCHA Site Key로 교체
+            modal.classList.add("show");
+            window.sessionToken = sessionToken;
+        }
+
+        function submitCaptcha() {
+            const recaptchaResponse = grecaptcha.getResponse();
+            fetch('/verify-captcha', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    sessionToken: window.sessionToken,
+                    recaptchaResponse: recaptchaResponse
+                })
+            })
+            .then(res => res.json())
+            .then(verification => {
+                console.log(verification);
+                if (verification.redirect) {
+                    window.location.href = verification.redirect; // /memberships로 리다이렉트
+                }
+            })
+            .catch(err => console.error('CAPTCHA Verification Error:', err));
+        }
+    </script>
+</body>
+</html>
