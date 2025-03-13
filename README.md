@@ -28,8 +28,8 @@ If you find this helpful, please the "star"🌟 to support further improvements.
 flask/
 ├── app.py
 ├── requirements.txt
-├── static/
-|   └── index.html
+└── static/
+    └── index.html
 ```
 
 ## Use Case
